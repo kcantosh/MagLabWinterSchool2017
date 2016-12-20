@@ -1,0 +1,101 @@
+\documentclass[12pt]{article}
+\usepackage{helvet}
+\usepackage{fullpage}
+
+\begin{document}
+
+\section*{Introduction}
+
+We are going to do a simulation of H$_2$ in this exercise. 
+While it may seem small, this simple system includes a lot of the physics that is present in more complex materials, while taking a few seconds\footnote{The techniques we're using are not the fastest for the specific problem of H$_2$. However, they scale very well, so you can apply exactly the same techniques to systems up to around 1000 electrons, with a big enough computer.} to perform an exact simulation on. 
+This way we can try a lot of different calculations!
+
+\section*{Library: }
+
+\subsection*{Class: H2Runner}
+
+We have made a small Python class that simplifies the setup of a QMC run. 
+It writes a few simple 
+
+\begin{table}
+\begin{tabular}{lp{0.5\columnwidth}}
+Option & Allowed values \\
+\hline
+wavefunction & 'singlet','triplet'\\
+optimize\_det & True/False \\
+r & real number greater than zero \\
+\end{tabular}
+\end{table}
+
+
+\begin{table}
+\begin{tabular}{lp{0.5\columnwidth}}
+File & Function \\
+\hline
+runqmc.py & Interface with QWalk\\
+test.py & Run QMC calculations \\
+plot*.py & Plot results \\
+\end{tabular}
+\end{table}
+
+
+\subsection*{Hamiltonian: H2Runner.gen\_sys() }
+
+\subsection*{Trial wave function: Slater part}
+
+To construct our wave function, note that there are two sites, let's call them $|1\rangle$ and $|2\rangle$. 
+These represent the 1s atomic orbitals around atoms 1 and 2, respectively. 
+Since there are two electrons, we can represent the two-particle quantum states (with one up and one down electron) as: \\
+\begin{tabular}{lc}
+$|11\rangle$ & Both on atom 1 \\
+$|12\rangle$ & Up on atom 1, down on atom 2 \\
+$|21\rangle$ & Up on atom 2, down on atom 1 \\
+$|22\rangle$ & Both on atom 1 \\
+\end{tabular}\\
+
+For the {\bf singlet} state($s=0$),\footnote{In this notation, we are always implicitly multiplying the real-space wave function by the spin state. That's going to be $|\uparrow\downarrow \rangle - |\downarrow\uparrow\rangle$ for the singlet state, and $|\uparrow\uparrow\rangle$ for the triplet state} the real-space part of the wave function must be symmetric. 
+We can thus parameterize the wave function as 
+\begin{equation}
+|\Psi_S\rangle = a\left(|12\rangle + |21\rangle\right) + b\left(|11\rangle + |22\rangle\right),
+\label{eqn:singlet_twf}
+\end{equation}
+where $a^2+b^2=1$. 
+There are two interesting limits for Eqn~\ref{eqn:singlet_twf}. 
+The non-interacting limit is when $a=b$. 
+In this case, you can verify that our wave function is equivalent to a product between single particle bonding orbitals $|b\rangle=|1\rangle + |2\rangle$.
+This is the Hartree-Fock solution.
+Another interesting limit is when $a=1/\sqrt{2},b=0$. 
+In that case there is no double occupancy. 
+This is the `antiferromagnetic' orientation, in which one atom always has an up electron when the other has a down, and vice-versa.
+
+
+For the {\bf triplet} $s=1$ case, the wave function in this basis has no parameters:
+\begin{equation}
+|\Psi_T\rangle = \frac{1}{\sqrt{2}}\left(|12\rangle - |21\rangle\right).
+\label{eqn:triplet_twf}
+\end{equation}
+Sometimes, you will hear that high-spin states are more weakly correlated. 
+This is a very simple example of why that is often true; there are just fewer states available when the electrons are the same spin.
+
+You can select between triplet and singlet by setting H2Runner.wavefunction.
+
+\subsection*{Trial wave function: Jastrow part}
+
+Our wave functions in Eqns~\ref{eqn:singlet_twf} and~\ref{eqn:triplet_twf} have a serious deficiency for realistic chemical systems. 
+They do not include local correlation within the atom. 
+At ranges less than the bond length, the electrons are completely uncorrelated, which means that an up and a down electron do not avoid each other at that scale.
+
+To describe the short-range effects, we add a {\bf Jastrow factor}.
+For 
+
+\section*{Contrasting with the Hubbard model}
+
+A common approximation for H$_2$ is the two-site Hubbard model. 
+In this model, our 
+
+\begin{itemize}
+\item 	
+\end{itemize}
+
+
+\end{document}
