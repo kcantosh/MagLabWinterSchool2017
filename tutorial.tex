@@ -136,13 +136,10 @@ This factor tends to push electrons apart from one another, which can be fixed b
 We expand $f_{1b}$ and $f_{2b}$ in a basis that decreases with distance and optimize the coefficients. 
 
 
-
-
 \section*{Things to do.}
 
 \begin{itemize}
-\item Vary $r$ and the wave function.
-\item Look at total energy for different wave functions. What happens to the singlet-triplet energy difference? Why?
+\item Look at total energy for different wave functions. What happens to the singlet-triplet energy difference as a function of $r$?
 \item Energy difference between singlet and triplet as a function of $r$.
 \item How does the double occupancy change as we increase $r$?
 \item How does including Jastrow correlation change the double occupancy? 
@@ -152,7 +149,7 @@ We expand $f_{1b}$ and $f_{2b}$ in a basis that decreases with distance and opti
 \section*{Contrasting with the Hubbard model}
 
 The wave function {\it ansatz} in Ean~\ref{eqn:singlet_twf} is exact for the 2-site Hubbard model. 
-If we consider the two functions as our basis so that the eigenvalue equation is 
+The eigenvalue equation for $a$ and $b$ is 
 \begin{equation}
 	\begin{bmatrix}
 	  0 & -2t \\
@@ -168,20 +165,26 @@ E\begin{bmatrix}
          b
         \end{bmatrix} 
 \end{equation}
-the characteristic equation  is 
-\begin{equation}
-E^2-EU-4t^2=0.
-\end{equation}
-with 
-\begin{equation}
-E=\frac{U\pm \sqrt{U^2+16t^2}}{2}	
-\end{equation}
 
+While we can solve the two-site Hubbard system analytically fairly easily, we will solve this numerically in this case. 
+From the {\it ab-initio} results, we can determine the effective $t$ and $U$ by matching 
+
+
+%the characteristic equation  is 
+%\begin{equation}
+%E^2-EU-4t^2=0.
+%\end{equation}
+%with 
+%\begin{equation}
+%E=\frac{U\pm \sqrt{U^2+16t^2}}{2}	
+%\end{equation}
+
+We can determine $t$ and $U$ if we have two 
 
 \begin{itemize}
 \item Singlet-triplet gap
 \item Double occupancy
-\item Does the ab-initio result follow the Hubbard model one? Why/why not?
+\item Is the Hubbard model a good model for the physics of this system? If we don't have enough information, how can we determine this?
 \end{itemize}
 
 

@@ -2,7 +2,7 @@
 import math
 import numpy as np
 import subprocess
-import json
+import json,shutil
 
 QW='/Users/lkwagner/work/qwalk/mainline/bin//qwalk'
 GOSLING='/Users/lkwagner/work/qwalk/mainline/bin//gosling'
@@ -18,17 +18,15 @@ average { gr }
 """
 
 #---------------------------------------------------------
-  def gen_hf(self,fname):
+  def gen_hf(self,fname,basename):
     f=open(fname,'w')
     if self.wavefunction != 'triplet' or self.optimize_det==False:
       f.write("method { LINEAR total_nstep 250 }\n")
     
     f.write("method { vmc nstep 4000 %s }"%self.average)
     self.gen_sys(f)
-    self.gen_orb(open("qw.orb",'w'))
-    self.gen_basis(open("qw.basis",'w'))
     f.write("TRIALFUNC { \n")
-    self.gen_slater(f,basename="qw")
+    self.gen_slater(f,basename)
     f.write("}\n")
     f.close()
     stdout=subprocess.check_output([QW,fname])
@@ -37,16 +35,13 @@ average { gr }
 
 #---------------------------------------------------------
 
-  def gen_vmc(self,fname):
+  def gen_vmc(self,fname,basename):
     f=open(fname,'w')
     f.write("method { LINEAR total_nstep 250 }\n")
     f.write("method { vmc nstep 4000 %s  }"%self.average)
-    
     self.gen_sys(f)
-    self.gen_orb(open("qw.orb",'w'))
-    self.gen_basis(open("qw.basis",'w'))
     f.write("TRIALFUNC { slater-jastrow \n wf1 { \n")
-    self.gen_slater(f,basename="qw")
+    self.gen_slater(f,basename)
     f.write("\n} \n wf2 { \n")
     self.gen_jast(f)
     f.write("}\n}\n")
@@ -58,22 +53,42 @@ average { gr }
 
   def gen_dmc(self,fname,wf_file):
     f=open(fname,'w')
-    f.write("method { DMC timestep 0.03 nblock 20 %s}\n"%self.average)
-    
+    f.write("method { DMC timestep 0.05 dynamics { UNR }  nblock 16 target_nconfig 512 %s}\n"%self.average)
     self.gen_sys(f)
-    self.gen_orb(open("qw.orb",'w'))
-    self.gen_basis(open("qw.basis",'w'))
     f.write("TRIALFUNC { include %s }\n"%wf_file)
     f.close()
     stdout=subprocess.check_output([QW,fname])
    # print(stdout)
     self.results['dmc']=json.loads(str(subprocess.getoutput(GOSLING+" -json "+fname+".log")))
-
+#---------------------------------------------------------
   def run_all(self,basename):
+
+    self.average=""" 
+average { gr } 
+average { region_fluctuation maxn 2 } 
+average { tbdm_basis 
+  npoints 1
+  ORBITALS {
+  CUTOFF_MO
+    MAGNIFY 1
+    NMO 2
+    ORBFILE %s.orb
+    INCLUDE %s.basis
+    CENTERS { USEATOMS } 
+  }
+  }
+"""%(basename,basename)
+
+    self.gen_orb(open(basename+".orb",'w'))
+    self.gen_basis(open(basename+".basis",'w'))
+    self.gen_lowdin(open(basename+".lowdin",'w'),basename)
+    stdout=subprocess.check_output([QW,basename+".lowdin"])
+    shutil.copyfile(basename+".lowdin.orb",basename+".orb")
+    
     print("no jastrow")
-    self.gen_hf(basename+'.hf')
+    self.gen_hf(basename+'.hf',basename)
     print("multiple Slater Jastrow")
-    self.gen_vmc(basename+'.vmc')
+    self.gen_vmc(basename+'.vmc',basename)
     print("diffusion Monte Carlo")
     self.gen_dmc(basename+'.dmc',basename+'.vmc.wfout')
     
@@ -132,6 +147,23 @@ SPLINE { S
       CSF { 1.0 1.0 -1.0 } \n""")
     if self.optimize_det==True:
       f.write("OPTIMIZE_DET")
+
+#----------------------------------------------------------
+  def gen_lowdin(self,f,basename='qwalk'):
+    f.write("""method { LOWDIN
+  ORBITALS {
+  CUTOFF_MO
+    MAGNIFY 1
+    NMO 2
+    ORBFILE %s.orb
+    INCLUDE %s.basis
+    CENTERS { USEATOMS } 
+  }
+  }
+"""%(basename,basename))
+    self.gen_sys(f)
+    
+    
 #----------------------------------------------------------
 
   def gen_orb(self,f):
@@ -241,8 +273,9 @@ def generate_dataframe(runners):
         df[nm]=[]
         df[nm+'_err']=[]
 
-      df[nm].append(r.results[d]['properties']['region_fluctuation']['fluctuation data'][4]['value'][1][1])
-      df[nm+'_err'].append(r.results[d]['properties']['region_fluctuation']['fluctuation data'][4]['error'][1][1])
+      df[nm].append(r.results[d]['properties']['tbdm_basis']['tbdm']['updown'][0][0][0][0])
+      df[nm+'_err'].append(r.results[d]['properties']['tbdm_basis']['tbdm']['updown_err'][0][0][0][0])
+
 
   return df
 
