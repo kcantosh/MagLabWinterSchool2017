@@ -7,3 +7,6 @@ For a detailed guide through the tutorial, compile tutorial.tex using LaTeX; if 
 ~~~
 pdflatex tutorial.tex
 ~~~
+
+To run the examples, you will need to install QWalk and indicate the location of the binaries in runqmc.py. You will also need the python libraries matplotlib, scipy, numpy, seaborn, and pandas.
+
