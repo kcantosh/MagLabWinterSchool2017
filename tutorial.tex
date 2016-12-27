@@ -148,7 +148,7 @@ We expand $f_{1b}$ and $f_{2b}$ in a basis that decreases with distance and opti
 
 \section*{Contrasting with the Hubbard model}
 
-The wave function {\it ansatz} in Ean~\ref{eqn:singlet_twf} is exact for the 2-site Hubbard model. 
+The wave function {\it ansatz} in Equation~\ref{eqn:singlet_twf} is exact for the 2-site Hubbard model. 
 The eigenvalue equation for $a$ and $b$ is 
 \begin{equation}
 	\begin{bmatrix}
@@ -167,24 +167,13 @@ E\begin{bmatrix}
 \end{equation}
 
 While we can solve the two-site Hubbard system analytically fairly easily, we will solve this numerically in this case. 
-From the {\it ab-initio} results, we can determine the effective $t$ and $U$ by matching 
-
-
-%the characteristic equation  is 
-%\begin{equation}
-%E^2-EU-4t^2=0.
-%\end{equation}
-%with 
-%\begin{equation}
-%E=\frac{U\pm \sqrt{U^2+16t^2}}{2}	
-%\end{equation}
-
-We can determine $t$ and $U$ if we have two 
+We can determine $t$ and $U$ if we have two numbers. 
+In hubbard.py, we do this using the singlet-triplet gap and the double occupancy. 
+Take a look at hubbard.py and see how it works.
 
 \begin{itemize}
-\item Singlet-triplet gap
-\item Double occupancy
-\item Is the Hubbard model a good model for the physics of this system? If we don't have enough information, how can we determine this?
+\item Does the short-range correlation increase or decrease $U/t$, for most situations?
+\item Is the Hubbard model a good model for the physics of this system? If we don't have enough information to determine the answer, how could we improve the situation?
 \end{itemize}
 
 
