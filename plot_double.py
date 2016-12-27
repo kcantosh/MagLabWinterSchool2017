@@ -15,9 +15,13 @@ for filename in glob.glob("*.pickle"):
     runners.append(runner)
 
 df=pd.DataFrame(generate_dataframe(runners))
+df.sort_values('r',inplace=True)
+df.index = range(0,len(df))
+
+
 
 groups=df.groupby('wavefunction')
-args={'marker':'o','mew':1,'linestyle':''}
+args={'marker':'o','mew':1,'linestyle':'-'}
 for a,b in groups:
   plt.errorbar(b['r'],b['slat_double'],b['slat_double_err'],label='Slater'+a,**args)
   plt.errorbar(b['r'],b['sj_double'],b['sj_double_err'],label='SJ' + a,**args)

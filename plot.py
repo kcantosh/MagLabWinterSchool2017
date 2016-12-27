@@ -6,16 +6,17 @@ sns.set_style('whitegrid')
 import glob,pickle
 from runqmc import H2Runner,generate_dataframe
 
-
+#--- Collect data
 runners=[]
 for filename in glob.glob("*.pickle"):
   with open(filename,'rb') as f:
     runner=pickle.load(f)
     runners.append(runner)
-
 df=pd.DataFrame(generate_dataframe(runners))
 df.sort_values('r',inplace=True)
 
+
+#--- Plot energy
 groups=df.groupby('wavefunction')
 args={'marker':'o','mew':1,'linestyle':'-'}
 for a,b in groups:

@@ -66,7 +66,7 @@ for r,group in groups:
 
 
 
-# --- Now we can make some plots
+# --- Make some plots
 sns.set_style("whitegrid")
 df_hubbard=pd.DataFrame(df_hubbard)
 df_hubbard.sort_values('r',inplace=True)

@@ -283,7 +283,6 @@ def generate_dataframe(runners):
 if __name__=="__main__":
   print("hello")
   runner=H2Runner()
-  runner.gen_hf("qw.hf")
-  runner.gen_vmc("qw.vmc")
+  runner.run_all("qw")
   print(runner.results)
   

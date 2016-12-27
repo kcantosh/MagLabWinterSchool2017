@@ -11,7 +11,7 @@ def normalize(a):
   return x/n
 
 sns.set_style('white')
-args={'marker':'o','mew':1,'linestyle':'','lw':1}
+
 
 runners=[]
 for filename in glob.glob("*.pickle"):
@@ -20,12 +20,11 @@ for filename in glob.glob("*.pickle"):
     runners.append(runner)
 
 df=pd.DataFrame(generate_dataframe(runners))
-#df=df[df['wavefunction']=='triplet']
 df.sort_values('r',inplace=True)
 df.index = range(0,len(df))
-print(df)
+
+
 nax=len(df)
-#nax=3
 fig,axes2d=plt.subplots(int(nax/2+0.6),2,figsize=(6,8),sharex=True,sharey=False)
 axes=axes2d.flatten()
 for i in range(nax):
