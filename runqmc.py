@@ -70,11 +70,11 @@ average { gr }
     self.results['dmc']=json.loads(str(subprocess.getoutput(GOSLING+" -json "+fname+".log")))
 
   def run_all(self,basename):
-    print("hf")
+    print("no jastrow")
     self.gen_hf(basename+'.hf')
-    print("vmc")
+    print("multiple Slater Jastrow")
     self.gen_vmc(basename+'.vmc')
-    print("dmc")
+    print("diffusion Monte Carlo")
     self.gen_dmc(basename+'.dmc',basename+'.vmc.wfout')
     
 

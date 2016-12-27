@@ -4,11 +4,11 @@ import os
 import pickle
 runners=[]
 
-for r in [0.9]: #[1.0,1.2,1.5,2.0,3.0,4.0,5.0]:
+for r in [1.0,1.5,2.0,3.0,4.0,5.0]:
   for wf in ['singlet','triplet']:
     #os.system("rm qw.*")
     basename="qw%s%g"%(wf,r)
-    print(wf,r)
+    print("=====Running ",wf," for r=",r,"Bohr")
     runner=H2Runner()
     runner.r=r
     runner.wavefunction=wf

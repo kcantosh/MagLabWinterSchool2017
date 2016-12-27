@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage{helvet}
 \usepackage{fullpage}
+\usepackage{amsmath}
 
 \begin{document}
 
@@ -14,27 +15,57 @@ This way we can try a lot of different calculations!
 
 \subsection*{Class: H2Runner}
 
-We have made a small Python class that simplifies the setup of a QMC run. 
-It writes a few simple 
+We have made a small Python class that simplifies the setup of a QMC run. You use it like the following:
+
+\begin{verbatim}
+from runqmc import H2Runner
+import pickle
+
+basename="test"
+runner=H2Runner()
+runner.r=1.4
+runner.wavefunction="singlet"
+runner.run_all(basename)
+with open(basename+".pickle",'wb') as f:
+  pickle.dump(runner,f)
+\end{verbatim}
+
+Try entering that into tmp.py and running it like
+\begin{verbatim}
+python3 tmp.py
+\end{verbatim}
+It will automatically run 3 calculations: no Jastrow factor, multiple Slater-Jastrow wave function, and diffusion Monte Carlo. 
+All results will be stored in the file ``test.pickle'' for later analysis.
+
+While you are reading through this document, go ahead and run 
+\begin{verbatim}
+python3 scan.py 	
+\end{verbatim}
+which will generate a scan over different bond lengths and spin states.
 
 \begin{table}
-\begin{tabular}{lp{0.5\columnwidth}}
-Option & Allowed values \\
-\hline
-wavefunction & 'singlet','triplet'\\
-optimize\_det & True/False \\
-r & real number greater than zero \\
-\end{tabular}
-\end{table}
-
-
-\begin{table}
+\caption{Options and files in the H$_2$ helper scripts.}
 \begin{tabular}{lp{0.5\columnwidth}}
 File & Function \\
 \hline
 runqmc.py & Interface with QWalk\\
-test.py & Run QMC calculations \\
+\hline
+scan.py & Run QMC calculations \\
+\hline
 plot*.py & Plot results \\
+\hline
+\end{tabular}
+\vspace{1cm}
+
+\begin{tabular}{lp{0.3\columnwidth}p{0.5\columnwidth}}
+Option & Meaning & Allowed values \\
+\hline
+wavefunction & Wave function (spin state) &  'singlet','triplet'\\
+\hline
+optimize\_det & Whether to optimize the determinant coefficients in Eqn~\ref{eqn:singlet_twf} &True/False \\
+\hline
+r & Bond length & real number greater than zero \\
+\hline
 \end{tabular}
 \end{table}
 
@@ -56,15 +87,21 @@ $|22\rangle$ & Both on atom 1 \\
 For the {\bf singlet} state($s=0$),\footnote{In this notation, we are always implicitly multiplying the real-space wave function by the spin state. That's going to be $|\uparrow\downarrow \rangle - |\downarrow\uparrow\rangle$ for the singlet state, and $|\uparrow\uparrow\rangle$ for the triplet state} the real-space part of the wave function must be symmetric. 
 We can thus parameterize the wave function as 
 \begin{equation}
-|\Psi_S\rangle = a\left(|12\rangle + |21\rangle\right) + b\left(|11\rangle + |22\rangle\right),
+|\Psi_S\rangle = \frac{a}{\sqrt{2}}\left(|12\rangle + |21\rangle\right) + \frac{b}{\sqrt{2}}\left(|11\rangle + |22\rangle\right),
 \label{eqn:singlet_twf}
 \end{equation}
 where $a^2+b^2=1$. 
+If you prefer, this wave function can be written in real space:
+\begin{equation}
+\left[a(\chi_1(r_1)\chi_2(r_2)+\chi_2(r_1)\chi_1(r_2)) + b(\chi_1(r_1)\chi_1(r_2)+\chi_2(r_1)\chi_2(r_2)).\right]	
+\end{equation}
+
+
 There are two interesting limits for Eqn~\ref{eqn:singlet_twf}. 
 The non-interacting limit is when $a=b$. 
 In this case, you can verify that our wave function is equivalent to a product between single particle bonding orbitals $|b\rangle=|1\rangle + |2\rangle$.
 This is the Hartree-Fock solution.
-Another interesting limit is when $a=1/\sqrt{2},b=0$. 
+Another interesting limit is when $a=1,b=0$. 
 In that case there is no double occupancy. 
 This is the `antiferromagnetic' orientation, in which one atom always has an up electron when the other has a down, and vice-versa.
 
@@ -86,15 +123,65 @@ They do not include local correlation within the atom.
 At ranges less than the bond length, the electrons are completely uncorrelated, which means that an up and a down electron do not avoid each other at that scale.
 
 To describe the short-range effects, we add a {\bf Jastrow factor}.
-For 
+It's perhaps easiest to see this in real space.
+For the two electrons in H$_2$, the wave function will be:
+\begin{align}
+\Psi_{SJ}(r_1,r_2)=&\left[a(\chi_1(r_1)\chi_2(r_2)+\chi_2(r_1)\chi_1(r_2)) + b(\chi_1(r_1)\chi_1(r_2)+\chi_2(r_1)\chi_2(r_2)) \right] \notag \\
+\times& \exp\left[f_{1b}(r_1)+f_{1b}(r_2) + f_{2b}(r_{12})\right],
+\label{eqn:slater-jastrow}	
+\end{align}
+where $r_{12}=|r_1-r_2|$. $f_{2b}$ is the two-particle part, which introduces explicit dependence on the particle-particle distance into the wave function.
+It includes the cusp condition when two electrons are at the same place. 
+This factor tends to push electrons apart from one another, which can be fixed by the one-body part $f_{1b}$. 
+We expand $f_{1b}$ and $f_{2b}$ in a basis that decreases with distance and optimize the coefficients. 
+
+
+
+
+\section*{Things to do.}
+
+\begin{itemize}
+\item Vary $r$ and the wave function.
+\item Look at total energy for different wave functions. What happens to the singlet-triplet energy difference? Why?
+\item Energy difference between singlet and triplet as a function of $r$.
+\item How does the double occupancy change as we increase $r$?
+\item How does including Jastrow correlation change the double occupancy? 
+\item Radial distribution function. What changes in triplet versus singlet? What changes between the different wave functions?
+\end{itemize}
 
 \section*{Contrasting with the Hubbard model}
 
-A common approximation for H$_2$ is the two-site Hubbard model. 
-In this model, our 
+The wave function {\it ansatz} in Ean~\ref{eqn:singlet_twf} is exact for the 2-site Hubbard model. 
+If we consider the two functions as our basis so that the eigenvalue equation is 
+\begin{equation}
+	\begin{bmatrix}
+	  0 & -2t \\
+	  -2t & U \\
+    \end{bmatrix} 
+\begin{bmatrix}
+         a \\
+         b
+        \end{bmatrix} 
+    =
+E\begin{bmatrix}
+         a \\
+         b
+        \end{bmatrix} 
+\end{equation}
+the characteristic equation  is 
+\begin{equation}
+E^2-EU-4t^2=0.
+\end{equation}
+with 
+\begin{equation}
+E=\frac{U\pm \sqrt{U^2+16t^2}}{2}	
+\end{equation}
+
 
 \begin{itemize}
-\item 	
+\item Singlet-triplet gap
+\item Double occupancy
+\item Does the ab-initio result follow the Hubbard model one? Why/why not?
 \end{itemize}
 
 
