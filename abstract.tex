@@ -1,0 +1,57 @@
+\documentclass[12pt]{article}
+\usepackage{helvet}
+\usepackage[margin=1in]{geometry}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+
+\begin{document}
+\title{Correlated electron systems using quantum Monte Carlo: a tutorial}
+\author{Lucas K. Wagner}
+\maketitle
+
+\section*{Introduction}
+
+In this tutorial, we will study H$_2$ very carefully using quantum Monte Carlo techniques. 
+While at first blush this may seem like a very simple system (only two electrons), we will discover that it has many of the features that more complex systems also have, while a numerically exact solution can be found in a few seconds using quantum Monte Carlo.
+We will thus be able to perform many calculations which will allow us to examine the physics of this system systematically in a short time. 
+
+\section*{Learning goals} 
+\begin{itemize}
+\item How to perform a quantum Monte Carlo calculation on a first principles model of a chemical system
+\item The effect of electron correlation on the ground state and excited states of a system.
+\item The different types of correlation: short range and long range.
+\item The relationship between the first principles calculation and effective models of the behavior.
+\end{itemize}
+
+\section*{Procedure} 
+\begin{itemize}
+\item Run QMC calculations on H$_2$ across different atomic separations.
+\item Try different correlated wave functions
+\item Examine how the effective model that describes H$_2$ changes with atom separation and with the treatment of short range correlation. 	
+\end{itemize}
+
+\paragraph{H$_2$ at different atomic separations.} 
+At very large separations, the system is basically two weakly interacting atoms, while at small separations, the system is much better described by both electrons occupying a bonding orbital.
+Because we are using exact quantum calculations, we can also examine the in-between case, when the atoms are at moderate separation.
+
+\paragraph{Different many-body wave functions.} 
+We consider three types of wave functions: no short range correlation (two independent Slater determinants), parameterized dynamic (short-range) correlation (multiple Slater-Jastrow wave function), and projection Monte Carlo solutions (exact in this case).
+We see that sometimes the parameterized correlation is good, and sometimes it can fail to perfectly describe the correlation. 
+The dynamic correlation affects the energy dramatically because the energy scale when two electrons are close is large.
+
+\paragraph{The effective model.}
+Often in physics we are interested only in the low-energy excitations of a material system. 
+We learn about how the effective model is changed by how well we calculate the properties of the material system. 
+In particular, the effective interactions are actually reduced by good treatment of electron correlation. 
+
+
+\paragraph{Similarities and differences from more complex materials.}
+The main difference is that for more complex materials there are usually more electrons around--and more options. 
+The short range correlation is always quite important in multi-electron atoms, while in H$_2$, its importance decreases as the atoms become more separated.
+This means that the importance of screening is much larger in multi-electron atoms, so methods that treat it well.
+Many of the conversations in condensed matter physics concerns whether to start from the atomic limit and view the interatomic hopping as a perturbation, or to start from the delocalized picture and add interactions in. 
+In this exercise, we interpolate between those two limits and see where neither picture is quite right.
+
+\end{document}

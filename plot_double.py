@@ -21,11 +21,28 @@ df.index = range(0,len(df))
 
 
 groups=df.groupby('wavefunction')
-args={'marker':'o','mew':1,'linestyle':'-'}
+args={'mew':1,'linestyle':'-'}
+palette=sns.color_palette()
+colors={'slat':palette[0],
+        'multislat':palette[1],
+        'sj':palette[2],
+        'dmc':palette[3]
+        }
+labels={'slat':"Slater",
+        'multislat':"Multiple Slater",
+        'sj':"Multiple Slater-Jastrow",
+        'dmc':"DMC"
+        }
+
+markers={'singlet':'o',
+         'triplet':'s' 
+         }
+
 for a,b in groups:
-  plt.errorbar(b['r'],b['slat_double'],b['slat_double_err'],label='Slater'+a,**args)
-  plt.errorbar(b['r'],b['sj_double'],b['sj_double_err'],label='SJ' + a,**args)
-  plt.errorbar(b['r'],b['dmc_double'],b['dmc_double_err'],label='DMC' + a,**args)
+  for ansatz in ['slat','multislat','sj','dmc']:
+    plt.errorbar(b['r'],b[ansatz+'_double'],b[ansatz+'_double_err'],
+            label=labels[ansatz]+","+a,color=colors[ansatz],marker=markers[a],
+            **args)
   
 plt.xlabel("r (Bohr)")
 plt.ylabel("Double occupancy")

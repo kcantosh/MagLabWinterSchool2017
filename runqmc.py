@@ -18,7 +18,7 @@ average { gr }
 """
 
 #---------------------------------------------------------
-  def gen_hf(self,fname,basename):
+  def gen_multislater(self,fname,basename):
     f=open(fname,'w')
     if self.wavefunction != 'triplet' or self.optimize_det==False:
       f.write("method { LINEAR total_nstep 250 }\n")
@@ -31,7 +31,22 @@ average { gr }
     f.close()
     stdout=subprocess.check_output([QW,fname])
     #print(stdout)
+    self.results['multislater']=json.loads(str(subprocess.getoutput(GOSLING+" -json "+fname+".log")))
+#---------------------------------------------------------
+
+
+  def gen_hf(self,fname,basename):
+    f=open(fname,'w')
+    f.write("method { vmc nstep 4000 %s }"%self.average)
+    self.gen_sys(f)
+    f.write("TRIALFUNC { \n")
+    self.gen_slater(f,basename)
+    f.write("}\n")
+    f.close()
+    stdout=subprocess.check_output([QW,fname])
+    #print(stdout)
     self.results['hf']=json.loads(str(subprocess.getoutput(GOSLING+" -json "+fname+".log")))
+    
 
 #---------------------------------------------------------
 
@@ -84,9 +99,11 @@ average { tbdm_basis
     self.gen_lowdin(open(basename+".lowdin",'w'),basename)
     stdout=subprocess.check_output([QW,basename+".lowdin"])
     shutil.copyfile(basename+".lowdin.orb",basename+".orb")
-    
-    print("no jastrow")
+    print("hf")
     self.gen_hf(basename+'.hf',basename)
+    
+    print("multiple Slater, no jastrow")
+    self.gen_multislater(basename+'.multislater',basename)
     print("multiple Slater Jastrow")
     self.gen_vmc(basename+'.vmc',basename)
     print("diffusion Monte Carlo")
@@ -140,7 +157,7 @@ SPLINE { S
    1 1
    2 2
       } )
-      CSF { 1.0 1.0 1.0 } CSF{ 0.9 1.0 1.0 } \n""")
+      CSF { 1.0 1.0 1.0 } CSF{ 1.0 1.0 1.0 } \n""")
     if self.wavefunction=="triplet":
       f.write("""
       STATES { 1 2 2 1 } 
@@ -230,8 +247,12 @@ def generate_dataframe(runners):
       'optimize_det':[],
       'slat_en':[],
       'slat_en_err':[],
+      'multislat_en':[],
+      'multislat_en_err':[],
       'slatgr':[],
       'slatgr_err':[],
+      'multislatgr':[],
+      'multislatgr_err':[],
       'sj_en':[],
       'sj_en_err':[],
       'sjgr':[],
@@ -248,6 +269,9 @@ def generate_dataframe(runners):
     df['wavefunction'].append(r.wavefunction)
     df['slat_en'].append(r.results['hf']['properties']['total_energy']['value'][0])
     df['slat_en_err'].append(r.results['hf']['properties']['total_energy']['error'][0])
+    df['multislat_en'].append(r.results['multislater']['properties']['total_energy']['value'][0])
+    df['multislat_en_err'].append(r.results['multislater']['properties']['total_energy']['error'][0])
+    
     df['sj_en'].append(r.results['vmc']['properties']['total_energy']['value'][0])
     df['sj_en_err'].append(r.results['vmc']['properties']['total_energy']['error'][0])
     df['dmc_en'].append(r.results['dmc']['properties']['total_energy']['value'][0])
@@ -261,13 +285,16 @@ def generate_dataframe(runners):
     df['slatgr'].append(r.results['hf']['properties']['gr'][gr_channel])
     df['slatgr_err'].append(r.results['hf']['properties']['gr'][gr_channel+'_err'])
 
+    df['multislatgr'].append(r.results['multislater']['properties']['gr'][gr_channel])
+    df['multislatgr_err'].append(r.results['multislater']['properties']['gr'][gr_channel+'_err'])
+
     df['sjgr'].append(r.results['vmc']['properties']['gr'][gr_channel])
     df['sjgr_err'].append(r.results['vmc']['properties']['gr'][gr_channel+'_err'])
 
     df['dmcgr'].append(r.results['dmc']['properties']['gr'][gr_channel])
     df['dmcgr_err'].append(r.results['dmc']['properties']['gr'][gr_channel+'_err'])
     
-    for n,d in zip(['slat','sj','dmc'],['hf','vmc','dmc']):
+    for n,d in zip(['slat','multislat','sj','dmc'],['hf','multislater','vmc','dmc']):
       nm=n+'_double'
       if nm not in df.keys():
         df[nm]=[]

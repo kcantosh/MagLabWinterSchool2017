@@ -46,7 +46,7 @@ for r,group in groups:
   #print(group)
   prefix='dmc'
   if len(group)==2:
-    for prefix in ['slat','sj','dmc']:
+    for prefix in ['slat','multislat','sj','dmc']:
       triplet=np.where(group['wavefunction'].values=='triplet')[0][0]
       singlet=1-triplet
       endiff=group[prefix+'_en'].values[singlet]-group[prefix+'_en'].values[triplet]
