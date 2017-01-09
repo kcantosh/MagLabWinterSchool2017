@@ -45,6 +45,7 @@ for a,b in groups:
             **args)
   
 plt.xlabel("r (Bohr)")
+plt.xlim(1.0,4.1)
 plt.ylabel("Double occupancy")
 plt.legend(loc=(1.0,0.5))
 
