@@ -4,7 +4,8 @@ import numpy as np
 import subprocess
 import json,shutil
 
-BIN="/home/winterschool/winterschool/arxive/qwalk-devel/bin/"
+#BIN="/home/winterschool/winterschool/arxive/qwalk-devel/bin/"
+BIN="/home/lkwagner/qwalk/bin/"
 QW=BIN+"qwalk"
 GOSLING=BIN+"gosling"
 
@@ -24,7 +25,7 @@ average { gr }
     if self.wavefunction != 'triplet' or self.optimize_det==False:
       f.write("method { LINEAR total_nstep 250 }\n")
     
-    f.write("method { vmc nstep 4000 %s }"%self.average)
+    f.write("method { vmc nstep 1000 %s }\n"%self.average)
     self.gen_sys(f)
     f.write("TRIALFUNC { \n")
     self.gen_slater(f,basename)
@@ -38,7 +39,7 @@ average { gr }
 
   def gen_hf(self,fname,basename):
     f=open(fname,'w')
-    f.write("method { vmc nstep 4000 %s }"%self.average)
+    f.write("method { vmc nstep 1000 %s}\n"%self.average)
     self.gen_sys(f)
     f.write("TRIALFUNC { \n")
     self.gen_slater(f,basename)
@@ -54,11 +55,11 @@ average { gr }
   def gen_vmc(self,fname,basename):
     f=open(fname,'w')
     f.write("method { LINEAR total_nstep 250 }\n")
-    f.write("method { vmc nstep 4000 %s  }"%self.average)
+    f.write("method { vmc nstep 1000 %s}"%self.average)
     self.gen_sys(f)
-    f.write("TRIALFUNC { slater-jastrow \n wf1 { \n")
+    f.write("TRIALFUNC { slater-jastrow \nwf1 { \n")
     self.gen_slater(f,basename)
-    f.write("\n} \n wf2 { \n")
+    f.write("\n} \nwf2 { \n")
     self.gen_jast(f)
     f.write("}\n}\n")
     f.close()
@@ -69,7 +70,7 @@ average { gr }
 
   def gen_dmc(self,fname,wf_file):
     f=open(fname,'w')
-    f.write("method { DMC timestep 0.05 dynamics { UNR }  nblock 16 target_nconfig 512 %s}\n"%self.average)
+    f.write("method { DMC timestep 0.05 dynamics { UNR }  nblock 12 target_nconfig 512 %s}\n"%self.average)
     self.gen_sys(f)
     f.write("TRIALFUNC { include %s }\n"%wf_file)
     f.close()
@@ -80,18 +81,13 @@ average { gr }
   def run_all(self,basename):
 
     self.average=""" 
-average { gr } 
-average { region_fluctuation maxn 2 } 
-average { tbdm_basis 
-  npoints 1
-  ORBITALS {
-  CUTOFF_MO
-    MAGNIFY 1
-    NMO 2
-    ORBFILE %s.orb
-    INCLUDE %s.basis
-    CENTERS { USEATOMS } 
-  }
+  average { gr } 
+  average { tbdm_basis 
+    npoints 1
+    ORBITALS { CUTOFF_MO MAGNIFY 1 NMO 2 
+               ORBFILE %s.orb INCLUDE %s.basis 
+               CENTERS { USEATOMS } 
+    }
   }
 """%(basename,basename)
 
@@ -116,14 +112,13 @@ average { tbdm_basis
     f.write("""
 SYSTEM { MOLECULE \n""")
     if self.wavefunction=="singlet":
-      f.write(" NSPIN { 1  1 } \n")
+      f.write("  NSPIN { 1  1 } \n")
     elif self.wavefunction=="triplet":
       f.write(" NSPIN { 2 0 } \n")
-    f.write("""
-ATOM { H  1  COOR 0   0  0.0 }
-ATOM { H  1  COOR 0   0  %g }
+    f.write("""  ATOM { H  1  COOR 0   0  0.0 }
+  ATOM { H  1  COOR 0   0  %g }
 } 
-    """%self.r )
+\n\n"""%self.r )
 #-----------------------------------------------------------
   def gen_basis(self,f):
     x=np.linspace(0,20,200)
@@ -141,7 +136,7 @@ SPLINE { S
     f.write("}\n}\n")
 #----------------------------------------------------------
   def gen_slater(self,f,basename="qwalk"):
-    f.write("""SLATER
+    f.write("""  SLATER
   ORBITALS {
   CUTOFF_MO
     MAGNIFY 1
@@ -152,19 +147,15 @@ SPLINE { S
   }
 """%(basename,basename))
     if self.wavefunction=="singlet":
-      f.write("""  STATES {
-   1 2 
-   2 1 
-   1 1
-   2 2
-      } )
-      CSF { 1.0 1.0 1.0 } CSF{ 1.0 1.0 1.0 } \n""")
+      f.write("""  STATES { 1 2    2 1    1 1    2 2   } 
+  CSF { 1.0 1.0 1.0 }
+  CSF{ 1.0 1.0 1.0 } \n""")
     if self.wavefunction=="triplet":
       f.write("""
       STATES { 1 2 2 1 } 
       CSF { 1.0 1.0 -1.0 } \n""")
     if self.optimize_det==True:
-      f.write("OPTIMIZE_DET")
+      f.write("  OPTIMIZE_DET\n")
 
 #----------------------------------------------------------
   def gen_lowdin(self,f,basename='qwalk'):
@@ -201,42 +192,14 @@ COEFFICIENTS
       LIKE_COEFFICIENTS { 0.25  0   } 
       UNLIKE_COEFFICIENTS { 0  0.5   }  
     } 
-    EEBASIS { 
-      EE
-      CUTOFF_CUSP
-      GAMMA 24
-      CUSP 1
-      CUTOFF 7.5
-    }
-    EEBASIS { 
-      EE
-      CUTOFF_CUSP
-      GAMMA 24
-      CUSP 1
-      CUTOFF 7.5
-    }
+    EEBASIS { EE CUTOFF_CUSP GAMMA 24 CUSP 1 CUTOFF 7.5 }
+    EEBASIS { EE CUTOFF_CUSP GAMMA 24 CUSP 1 CUTOFF 7.5 }
   }
   GROUP { 
-    ONEBODY { 
-      COEFFICIENTS { H 0. 0. 0. } 
-    } 
-    TWOBODY { 
-      COEFFICIENTS { 0. 0. 0. } 
-    } 
-    EIBASIS { 
-      H
-      POLYPADE
-      RCUT 7.5
-      BETA0 -0.4
-      NFUNC 3
-    }
-    EEBASIS { 
-      EE
-      POLYPADE
-      RCUT 7.5
-      BETA0 -0.02
-      NFUNC 3
-    }
+    ONEBODY { COEFFICIENTS { H 0. 0. 0. } } 
+    TWOBODY { COEFFICIENTS { 0. 0. 0. }  } 
+    EIBASIS { H POLYPADE RCUT 7.5 BETA0 -0.4 NFUNC 3 }
+    EEBASIS {  EE POLYPADE RCUT 7.5 BETA0 -0.02 NFUNC 3 }
   }
 """) 
 

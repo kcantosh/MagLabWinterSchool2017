@@ -54,7 +54,7 @@ for r,group in groups:
       x0=[0.3,0.3]
       data=[endiff,double]
       xmin,cov_x,infodict,mesg,ier=scipy.optimize.leastsq(error,x0,(data),full_output=True)
-      w,v=np.linalg.eigh(cov_x)
+      #w,v=np.linalg.eigh(cov_x)
       #print(np.linalg.eigh(cov_x))
       #print(prefix,r,"t=",xmin[0],"U=",xmin[1],"U/t",xmin[1]/xmin[0],'double',double,'endiff',endiff,'condition',w)
       df_hubbard['t'].append(xmin[0])
