@@ -4,8 +4,9 @@ import numpy as np
 import subprocess
 import json,shutil
 
-QW='./runqwalk'
-GOSLING='/home/lkwagner/qwalk/bin/gosling'
+BIN="/home/winterschool/winterschool/arxive/qwalk-devel/bin/"
+QW=BIN+"qwalk"
+GOSLING=BIN+"gosling"
 
 class H2Runner:
   def __init__(self):
