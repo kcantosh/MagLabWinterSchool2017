@@ -38,12 +38,9 @@ markers={'singlet':'o',
 
 for a,b in groups:
   for ansatz in ['slat','multislat','sj','dmc']:
-    plt.errorbar(b['r'],b[ansatz+'_en'],b[ansatz+'_en_err'],
+    plt.errorbar(b['r'].values,b[ansatz+'_en'].values,b[ansatz+'_en_err'].values,
             label=labels[ansatz]+","+a,color=colors[ansatz],marker=markers[a],
             **args)
-#    plt.errorbar(b['r'],b['multislat_en'],b['slat_en_err'],label='Multiple Slater,'+a,**args)
-#    plt.errorbar(b['r'],b['sj_en'],b['sj_en_err'],label='SJ,' + a,**args)
-#    plt.errorbar(b['r'],b['dmc_en'],b['dmc_en_err'],label='DMC,' + a,**args)
   
 plt.xlabel("r (Bohr)")
 plt.ylabel("Energy (Hartree)")

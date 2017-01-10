@@ -40,13 +40,13 @@ markers={'singlet':'o',
 
 for a,b in groups:
   for ansatz in ['slat','multislat','sj','dmc']:
-    plt.errorbar(b['r'],b[ansatz+'_double'],b[ansatz+'_double_err'],
+    plt.errorbar(b['r'].values,b[ansatz+'_double'].values,b[ansatz+'_double_err'].values,
             label=labels[ansatz]+","+a,color=colors[ansatz],marker=markers[a],
             **args)
   
 plt.xlabel("r (Bohr)")
 plt.xlim(1.0,4.1)
-plt.ylabel("Double occupancy")
+plt.ylabel("Double occupancy of a single site")
 plt.legend(loc=(1.0,0.5))
 
 sns.despine()
