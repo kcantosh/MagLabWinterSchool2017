@@ -4,8 +4,8 @@ import numpy as np
 import subprocess
 import json,shutil
 
-BIN="/home/winterschool/winterschool/arxive/qwalk-devel/bin/"
-#BIN="/home/lkwagner/qwalk/bin/"
+#BIN="/home/winterschool/winterschool/arxive/qwalk-devel/bin/"
+BIN="/Users/lkwagner/work/qwalk/mainline/bin/"
 QW=BIN+"qwalk"
 GOSLING=BIN+"gosling"
 
@@ -267,6 +267,13 @@ def generate_dataframe(runners):
       df[nm].append(r.results[d]['properties']['tbdm_basis']['tbdm']['updown'][0][0][0][0])
       df[nm+'_err'].append(r.results[d]['properties']['tbdm_basis']['tbdm']['updown_err'][0][0][0][0])
 
+    #----sigma, the standard deviation of the local energy
+    for n,d in zip(['slat','multislat','sj','dmc'],['hf','multislater','vmc','dmc']):
+      nm=n+'_sigma'
+      if nm not in df.keys():
+        df[nm]=[]
+      df[nm].append(r.results[d]['properties']['total_energy']['sigma'][0])
+      
 
   return df
 
