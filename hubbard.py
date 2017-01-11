@@ -43,8 +43,6 @@ df_hubbard={'t':[],
             }
 groups=df.groupby('r')
 for r,group in groups:
-  #print(group)
-  prefix='dmc'
   if len(group)==2:
     for prefix in ['slat','multislat','sj','dmc']:
       triplet=np.where(group['wavefunction'].values=='triplet')[0][0]
