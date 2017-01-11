@@ -4,8 +4,8 @@ import numpy as np
 import subprocess
 import json,shutil
 
-#BIN="/home/winterschool/winterschool/arxive/qwalk-devel/bin/"
-BIN="/home/lkwagner/qwalk/bin/"
+BIN="/home/winterschool/winterschool/arxive/qwalk-devel/bin/"
+#BIN="/home/lkwagner/qwalk/bin/"
 QW=BIN+"qwalk"
 GOSLING=BIN+"gosling"
 
